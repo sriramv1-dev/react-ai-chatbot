@@ -1,5 +1,9 @@
 # integrate Gemini API into the project
 
+# integrate Open AI API into the project
+
+# integrate Deepseek API into the project
+
 # work with both chat and chat streams from the ai model
 
 # utilize javascript generators

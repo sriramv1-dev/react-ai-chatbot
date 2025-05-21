@@ -4,11 +4,13 @@ import chatbot from "./assets/chatbot.png";
 import Chat from "./components/chat/chat";
 import Controls from "./components/Controls/Controls";
 import { v4 as uuidv4 } from "uuid";
-import { GoogleAssitant } from "./assistants/googleai";
+import { GoogleAssitant as assistant } from "./assistants/googleai";
+// import { DeepseekAssistant as assistant } from "./assistants/deepseekai";
+// import { OpenAIAssistant as assistant } from "./assistants/openai";
 import Loader from "./components/Loader/loader";
 
 function App() {
-  const g1 = new GoogleAssitant();
+  const g1 = new assistant();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -53,7 +55,7 @@ function App() {
     addMessage({ id: uuidv4(), role: "user", content });
     setIsLoading(true);
     try {
-      const result = await g1.chatStream(content);
+      const result = await g1.chatStream(content, messages);
       let isFirstChunk = false;
 
       for await (const chunk of result) {
