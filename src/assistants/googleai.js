@@ -19,6 +19,7 @@ export class GoogleAssitant {
     }
   }
 
+  // javascript generator function uses yield.
   async *chatStream(content) {
     try {
       const result = await this.#chat.sendMessageStream(content);

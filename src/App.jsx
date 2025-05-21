@@ -11,6 +11,7 @@ function App() {
   const g1 = new GoogleAssitant();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const addMessage = (message) => {
     setMessages((prev) => [...prev, message]);
@@ -37,6 +38,47 @@ function App() {
     }
   };
 
+  const updateLastMessageContent = (content) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((message, index) =>
+        // appending this content to the last message.
+        index === prevMessages.length - 1
+          ? { ...message, content: `${message.content}${content}` }
+          : message
+      )
+    );
+  };
+
+  const handleContentStreamSend = async (content) => {
+    addMessage({ id: uuidv4(), role: "user", content });
+    setIsLoading(true);
+    try {
+      const result = await g1.chatStream(content);
+      let isFirstChunk = false;
+
+      for await (const chunk of result) {
+        if (!isFirstChunk) {
+          isFirstChunk = true;
+          addMessage({ id: uuidv4(), role: "assistant", content: "" });
+          setIsLoading(false);
+          setIsStreaming(true);
+        }
+
+        updateLastMessageContent(chunk);
+      }
+      setIsStreaming(false);
+    } catch (error) {
+      console.log(error);
+      addMessage({
+        id: uuidv4(),
+        role: "system",
+        content: "sorry couldn't process your request, please try again.????",
+      });
+      setIsLoading(false);
+      setIsStreaming(false);
+    }
+  };
+
   return (
     <div className="App">
       {isLoading && <Loader />}
@@ -47,7 +89,10 @@ function App() {
       <div className="ChatContainer">
         <Chat messages={messages} />
       </div>
-      <Controls onSend={handleContentSend} disabled={isLoading} />
+      <Controls
+        onSend={handleContentStreamSend}
+        disabled={isLoading || isStreaming}
+      />
     </div>
   );
 }

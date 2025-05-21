@@ -27,6 +27,12 @@ const Chat = ({ messages }) => {
   );
 
   useEffect(() => {
+    // use this only if you want to see user's question visible after system response
+
+    // const lastMessage = messages[messages.length - 1];
+    // if (lastMessage.role === "user") {
+    //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
